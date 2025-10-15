@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nana Janashia - Full Stack Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #0f0f0f;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background: #f8f9fa;
+            color: #1a1a1a;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.3em;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        body.light-mode .theme-toggle {
+            background: rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 0, 0, 0.2);
+            color: #1a1a1a;
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+            padding: 20px;
+            max-width: 900px;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            animation: fadeInUp 1s ease 0.2s forwards;
+            opacity: 0;
+            letter-spacing: 2px;
+        }
+
+        .hero .intro-text {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.4s forwards;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero .contact-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            font-size: 1.05em;
+        }
+
+        .contact-item i {
+            font-size: 1.3em;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards, bounce 2s infinite 1s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .scroll-indicator::before {
+            content: '↓';
+            font-size: 2em;
+            color: white;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        nav.visible {
+            transform: translateY(0);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            list-style: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 100px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .section-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 3em;
+            margin-bottom: 50px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #skills {
+            background: #1a1a1a;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode #skills {
+            background: #ffffff;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        body.light-mode .skill-card {
+            background: #f8f9fa;
+            border-color: #e0e0e0;
+        }
+
+        .skill-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .skill-card h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+
+        .skill-card p {
+            color: #ccc;
+            line-height: 1.8;
+        }
+
+        body.light-mode .skill-card p {
+            color: #555;
+        }
+
+        #experience {
+            background: #0f0f0f;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode #experience {
+            background: #f8f9fa;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 3px solid #667eea;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        body.light-mode .timeline-item {
+            background: #ffffff;
+            border-color: #667eea;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item:hover {
+            border-left-color: #764ba2;
+            transform: translateX(10px);
+        }
+
+        .job-header {
+            margin-bottom: 15px;
+        }
+
+        .job-title {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        body.light-mode .job-title {
+            color: #1a1a1a;
+        }
+
+        .company {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .job-meta {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .timeline-item ul {
+            margin-left: 0;
+            margin-top: 15px;
+            list-style: none;
+        }
+
+        .timeline-item li {
+            color: #ccc;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        body.light-mode .timeline-item li {
+            color: #555;
+        }
+
+        #education {
+            background: #1a1a1a;
+            min-height: 60vh;
+            transition: background-color 0.3s ease;
+        }
+
+        body.light-mode #education {
+            background: #ffffff;
+        }
+
+        .education-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .education-card {
+            background: #f8f9fa;
+            border-color: #e0e0e0;
+        }
+
+        .education-card:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        }
+
+        .education-card h3 {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        body.light-mode .education-card h3 {
+            color: #1a1a1a;
+        }
+
+        .education-card .university {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .education-card .date {
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        body.light-mode .education-card .date {
+            color: #666;
+        }
+
+        footer {
+            background: #0a0a0a;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode footer {
+            background: #e9ecef;
+            color: #1a1a1a;
+        }
+
+        footer p {
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero .intro-text {
+                font-size: 1.1em;
+            }
+
+            .hero .contact-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                gap: 20px;
+                font-size: 0.9em;
+            }
+
+            .section-title {
+                font-size: 2em;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline {
+                padding-left: 30px;
+            }
+
+            .timeline::before {
+                left: 10px;
+            }
+
+            .timeline-item::before {
+                left: -44px;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <nav id="nav">
+        <ul>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#education">Education</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>NANA JANASHIA</h1>
+            <p class="intro-text">
+                A Full Stack Developer with 10+ years of experience building web applications that solve real business problems. 
+                Passionate about creating efficient, scalable solutions. I've worked remotely with diverse teams and contributed to projects for companies across Georgia, Europe, and beyond.
+            </p>
+            <div class="contact-info">
+                <a href="mailto:nana.jjanashia@gmail.com" class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>nana.jjanashia@gmail.com</span>
+                </a>
+                <a href="https://www.linkedin.com/in/nanajanashia/" target="_blank" class="contact-item">
+                    <i class="fa-brands fa-linkedin"></i>
+                    <span>LinkedIn</span>
+                </a>
+                <a href="https://github.com/nanajanashia" target="_blank" class="contact-item">
+                    <i class="fa-brands fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <span class="contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Tbilisi, Georgia</span>
+                </span>
+            </div>
+        </div>
+        <div class="scroll-indicator"></div>
+    </div>
+
+    <section id="skills">
+        <div class="section-content">
+            <h2 class="section-title">Technical Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <h3>Programming Languages</h3>
+                    <p>Golang, JavaScript, TypeScript, PHP</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Frameworks & Tools</h3>
+                    <p>Gin, Laravel, React, Next.js, Vue.js, Tailwind, styled-components</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Architecture & APIs</h3>
+                    <p>Microservices Architecture, RESTful API Development, REST API Design</p>
+                </div>
+                <div class="skill-card">
+                    <h3>Databases</h3>
+                    <p>PostgreSQL, MySQL, MS SQL, NoSQL, Cassandra, GORM</p>
+                </div>
+                <div class="skill-card">
+                    <h3>DevOps & Tools</h3>
+                    <p>Docker, Kibana, CI/CD, Agile, Git</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience">
+        <div class="section-content">
+            <h2 class="section-title">Experience</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Full Stack Developer</div>
+                        <div class="company">FortuneJack</div>
+                        <div class="job-meta">Tbilisi, Georgia • 04/2025 – Present</div>
+                    </div>
+                    <ul>
+                        <li>Led the development of several promotional campaigns, enhancing user engagement and retention through custom game mechanics and reward systems.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Full Stack Developer</div>
+                        <div class="company">RMS</div>
+                        <div class="job-meta">Tbilisi, Georgia • 01/2025 – 03/2025</div>
+                    </div>
+                    <ul>
+                        <li>Built a full-stack system with Golang and React to manage restaurant operations, including stock tracking, order processing, real-time updates based on ingredient usage, receipt generation, and streamlined user workflows, with automated deployment and CI/CD integration.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Full Stack Developer</div>
+                        <div class="company">Qbind</div>
+                        <div class="job-meta">Remote, Spain • 08/2024 – 12/2024</div>
+                    </div>
+                    <ul>
+                        <li>Designed and implemented new features for a full-stack web application, enhancing functionality and user experience.</li>
+                        <li>Integrated SMS APIs and developed secure APIs with token-based authentication for seamless communication and user access.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Full Stack Web Developer & Team Lead</div>
+                        <div class="company">Central Soft</div>
+                        <div class="job-meta">Remote • 09/2019 – 07/2024</div>
+                    </div>
+                    <ul>
+                        <li>Acted as a team manager for a period of time. Responsibilities included running stand-ups, delegation of tasks, writing technical documentation and ensuring delivery of clean coded extensible solutions on time.</li>
+                        <li>Researched and spearheaded the project to convert internal reporting to Kibana, later using it in place of tools that were being developed internally, thus significantly cutting down costs.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Web Developer</div>
+                        <div class="company">MT Solutions</div>
+                        <div class="job-meta">Remote • 09/2017 – 09/2019</div>
+                    </div>
+                    <ul>
+                        <li>Researched and presented on topics such as machine learning, using outside tools/libraries vs writing our own, cost impact and recommendations for customers.</li>
+                        <li>Played a key role in rewriting an internal tool in a new language. Responsible for the architecture of the new system. During the process improved business logic, refactored code and improved the UI, focusing on pain points reported by users.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Web Developer</div>
+                        <div class="company">Digital Design</div>
+                        <div class="job-meta">Tbilisi, Georgia • 09/2016 – 09/2017</div>
+                    </div>
+                    <ul>
+                        <li>Designed, developed, and deployed full-stack web applications—including a real-time auction platform—delivering end-to-end solutions under tight deadlines with a focus on performance, user experience, and secure transactions.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Full Stack Web Developer</div>
+                        <div class="company">ITDA</div>
+                        <div class="job-meta">Tbilisi, Georgia • 06/2016 – 09/2016</div>
+                    </div>
+                    <ul>
+                        <li>Developed and deployed CMS-integrated websites, allowing users to easily add, edit, and manage content.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Web Developer</div>
+                        <div class="company">Kings</div>
+                        <div class="job-meta">Tbilisi, Georgia • 10/2015 – 05/2016</div>
+                    </div>
+                    <ul>
+                        <li>Contributed to the development of an advanced platform for managing school olympiads, incorporating online registration and insightful statistics.</li>
+                    </ul>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="job-header">
+                        <div class="job-title">Software Engineer</div>
+                        <div class="company">MINDA</div>
+                        <div class="job-meta">Tbilisi, Georgia • 10/2014 – 03/2015</div>
+                    </div>
+                    <ul>
+                        <li>Working on simple projects and improving MS SQL, C# and ASP.NET skills.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="education">
+        <div class="section-content">
+            <h2 class="section-title">Education</h2>
+            <div class="education-card">
+                <h3>Bachelor of Science in Computer Science</h3>
+                <div class="university">Tbilisi State University</div>
+                <div class="date">2010 – 2014</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Nana Janashia • Available for new opportunities</p>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            } else {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+        });
+
+        const nav = document.getElementById('nav');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 100) {
+                nav.classList.add('visible');
+            } else {
+                nav.classList.remove('visible');
+            }
+            lastScroll = currentScroll;
+        });
+
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-content, .skill-card, .timeline-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        const skillCards = document.querySelectorAll('.skill-card');
+        skillCards.forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.08}s`;
+        });
+
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            item.style.transitionDelay = `${index * 0.06}s`;
+        });
+
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>
